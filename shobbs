@@ -1,0 +1,25 @@
+# makeCacheMatrix: This function creates a special "matrix" object that 
+# can cache its inverse.
+makeCacheMatrix <- function(A){
+	if(!is.matrix(A)) message("Error: A is not a matrix")
+	if(dim(A)[1]!=dim(A)[2]) message("Error: A is not a square matrix")
+	A.inv <- NULL  # Will be used in cacheSolve to store the inverse of the matrix A.
+	set <- function(B){A <<- B; A.inv <<- NULL} 
+	get <- function()A
+	setinv <- function(inverse) A.inv <<- inverse
+	getinv <- function()A.inv
+	return(list(set=set,get=get,setinv=setinv,getinv=getinv))
+}
+
+# cacheSolve: This function computes the inverse of the special "matrix" 
+# returned by makeCacheMatrix above. If the inverse has already been calculated 
+# (and the matrix has not changed), then the cachesolve should retrieve the inverse 
+# from the cache.
+cacheSolve <- function(A,...){
+	A.inv <- A$getinv()
+	if(!is.null(A.inv)){message("getting cached inverse");return(A.inv)}
+	M <- A$get()
+	A.inv <- solve(M,...)
+	A$setinv(A.inv)
+	return(A.inv)
+}
